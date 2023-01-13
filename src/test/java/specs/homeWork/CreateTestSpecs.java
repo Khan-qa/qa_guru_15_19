@@ -1,4 +1,4 @@
-package specs;
+package specs.homeWork;
 
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.specification.RequestSpecification;
@@ -11,20 +11,19 @@ import static io.restassured.filter.log.LogDetail.STATUS;
 import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.notNullValue;
 
-public class LoginSpecs {
-    public static RequestSpecification loginRequestSpec = with()
+public class CreateTestSpecs {
+    public static RequestSpecification createTestRequestSpec = with()
             .filter(withCustomTemplates())
             .baseUri("https://reqres.in")
-            .basePath("/api/login")
+            .basePath("/api/users")
             .log().all()
             .contentType(JSON);
 
-    public static ResponseSpecification loginResponseSpec = new
+    public static ResponseSpecification createTestResponseSpec = new
             ResponseSpecBuilder()
             .log(STATUS)
             .log(BODY)
-            .expectStatusCode(200)
-            .expectBody("token", notNullValue())
+            .expectStatusCode(201)
+            .expectBody("name", notNullValue())
             .build();
-
 }

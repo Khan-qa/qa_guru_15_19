@@ -1,105 +1,96 @@
 package tests;
 
+import models.homeWork.*;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
+import static specs.homeWork.CreateTestSpecs.createTestRequestSpec;
+import static specs.homeWork.CreateTestSpecs.createTestResponseSpec;
+import static specs.homeWork.DeletedTestSpecs.deletedTestRequestSpec;
+import static specs.homeWork.DeletedTestSpecs.deletedTestResponseSpec;
+import static specs.homeWork.LoginUnsuccessfulSpecs.loginUnsuccessfulRequestSpec;
+import static specs.homeWork.LoginUnsuccessfulSpecs.loginUnsuccessfulResponseSpec;
+import static specs.homeWork.RegisterUnsuccessfulSpecs.registerUnsuccessfulRequestSpec;
+import static specs.homeWork.RegisterUnsuccessfulSpecs.registerUnsuccessfulResponseSpec;
+import static specs.homeWork.UpdateTestSpec.updateTestRequestSpec;
+import static specs.homeWork.UpdateTestSpec.updateTestResponseSpec;
 
 public class HomeWork {
 
     @Test
-    void singleUserTest() {
-        given()
-                .log().uri()
-                .when()
-                .get("https://reqres.in/api/users/2")
-                .then()
-                .log().status()
-                .log().body()
-                .statusCode(200)
-                .body("data.first_name", is("Janet"),
-                        "data.last_name", is("Weaver"));
-    }
-
-    @Test
     void createTest() {
-        String data = "{ \"name\": \"morpheus\", \"job\": \"leader\" }";
+        CreateTestBodyModel bodyModel = new CreateTestBodyModel();
+        bodyModel.setName("morpheus");
+        bodyModel.setJob("leader");
 
-        given()
-                .log().uri()
-                .contentType(JSON)
-                .body(data)
+        CreateTestResponseModel responseModel = given(createTestRequestSpec)
+                .body(bodyModel)
                 .when()
-                .post("https://reqres.in/api/users")
+                .post()
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(201)
-                .body("name",is("morpheus"))
-                .body("job",is("leader"));
+                .spec(createTestResponseSpec)
+                .extract().as(CreateTestResponseModel.class);
+
+        assertThat(responseModel.getName()).isEqualTo("morpheus");
+        assertThat(responseModel.getJob()).isEqualTo("leader");
     }
 
     @Test
     void updateTest() {
-        String data = "{ \"name\": \"morpheus\", \"job\": \"zion resident\" }";
+        UpdateTestBodyModel bodyModel = new UpdateTestBodyModel();
+        bodyModel.setName("morpheus");
+        bodyModel.setJob("zion resident");
 
-        given()
-                .log().uri()
-                .contentType(JSON)
-                .body(data)
+        UpdateTestResponseModel responseModel = given(updateTestRequestSpec)
+                .body(bodyModel)
                 .when()
-                .put("https://reqres.in/api/users/2")
+                .put()
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(200)
-                .body("job", is("zion resident"));
+                .spec(updateTestResponseSpec)
+                .extract().as(UpdateTestResponseModel.class);
+
+        assertThat(responseModel.getJob()).isEqualTo("zion resident");
     }
 
     @Test
     void deletedTest() {
-        given()
-                .log().uri()
+        given(deletedTestRequestSpec)
                 .when()
-                .delete("https://reqres.in/api/users/2")
+                .delete()
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(204);
+                .spec(deletedTestResponseSpec);
     }
 
     @Test
     void loginUnsuccessful() {
-        String data = "{ \"email\": \"peter@klaven\" }";
+        LoginUnsuccessfulBodyModel bodyModel = new LoginUnsuccessfulBodyModel();
+        bodyModel.setEmail("peter@klaven");
 
-        given()
-                .log().uri()
-                .contentType(JSON)
-                .body(data)
+        LoginUnsuccessfulResponseModel responseModel = given(loginUnsuccessfulRequestSpec)
+                .body(bodyModel)
                 .when()
-                .post("https://reqres.in/api/login")
+                .post()
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(400)
-                .body("error",is("Missing password"));
+                .spec(loginUnsuccessfulResponseSpec)
+                .extract().as(LoginUnsuccessfulResponseModel.class);
+
+        assertThat(responseModel.getError()).isEqualTo("Missing password");
     }
 
     @Test
     void registerUnsuccessful() {
-        String data = "{ \"email\": \"sydney@fife\" }";
+        RegisterUnsuccessfulBodyModel bodyModel = new RegisterUnsuccessfulBodyModel();
+        bodyModel.setEmail("sydney@fife");
 
-        given()
-                .log().uri()
-                .contentType(JSON)
-                .body(data)
+        RegisterUnsuccessfulResponseModel responseModel = given(registerUnsuccessfulRequestSpec)
+                .body(bodyModel)
                 .when()
-                .post("https://reqres.in/api/register")
+                .post()
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(400)
-                .body("error",is("Missing password"));
+                .spec(registerUnsuccessfulResponseSpec)
+                .extract().as(RegisterUnsuccessfulResponseModel.class);
+
+        assertThat(responseModel.getError()).isEqualTo("Missing password");
     }
 }

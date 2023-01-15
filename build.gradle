@@ -30,10 +30,12 @@ allure {
 dependencies {
     testImplementation(
             'org.junit.jupiter:junit-jupiter:5.9.0',
+            'com.codeborne:selenide:6.11.0',
             'org.assertj:assertj-core:3.24.1',
             "io.qameta.allure:allure-rest-assured:$allureVersion",
             'com.fasterxml.jackson.core:jackson-databind:2.14.1',
-            'io.rest-assured:rest-assured:5.3.0')
+            'io.rest-assured:rest-assured:5.3.0',
+            'com.github.javafaker:javafaker:1.0.2')
 }
 
 tasks.withType(Test) {
